@@ -2,7 +2,7 @@
 
 Welcome to my online resume, a modern and responsive web-based curriculum vitae built with HTML, CSS, and JavaScript. This project serves as a digital representation of my professional experience, skills, and projects.
 
-🔗 **Live Demo**: [karam-ajaj.github.io/CV](https://karam-ajaj.github.io/CV/)
+🔗 **Live Demo**: [karam-ajaj.github.io/portfolio](https://karam-ajaj.github.io/portfolio/)
 
 ---
 
@@ -17,7 +17,7 @@ Welcome to my online resume, a modern and responsive web-based curriculum vitae 
 ## 📁 Project Structure
 
 ```
-CV/
+portfolio/
 ├── css/                 # Stylesheets
 ├── img/                 # Images and icons
 ├── js/                  # JavaScript files
@@ -39,8 +39,8 @@ To run the project locally:
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/karam-ajaj/CV.git
-   cd CV
+   git clone https://github.com/karam-ajaj/portfolio.git
+   cd portfolio
    ```
 
 2. **Install dependencies**:
