@@ -240,6 +240,12 @@ document.addEventListener('DOMContentLoaded', () => {
         let activeVendor = 'all';
         let searchTerm = '';
 
+        /* Collapse / expand logic */
+        const LIMIT = window.innerWidth <= 768 ? 6 : 12;
+        let isExpanded = false;
+        const toggleBtn = document.getElementById('credentialsToggle');
+        const hiddenCountEl = document.getElementById('credentialsHiddenCount');
+
         // Compute initial counts dynamically
         (function initCounts() {
             const totals = { all: cards.length, certification: 0, course: 0 };
@@ -280,6 +286,38 @@ document.addEventListener('DOMContentLoaded', () => {
             if (credCount) credCount.textContent = visible;
             if (credEmpty) credEmpty.style.display = visible === 0 ? 'block' : 'none';
             if (credGrid) credGrid.style.display = visible === 0 ? 'none' : '';
+
+            /* Apply collapse limit */
+            applyCollapse();
+        }
+
+        function applyCollapse() {
+            const visibleCards = cards.filter(c => !c.classList.contains('hidden'));
+            if (isExpanded || visibleCards.length <= LIMIT) {
+                visibleCards.forEach(c => c.classList.remove('collapsed-hidden'));
+                if (toggleBtn) {
+                    if (visibleCards.length <= LIMIT) {
+                        toggleBtn.style.display = 'none';
+                    } else {
+                        toggleBtn.style.display = 'flex';
+                        toggleBtn.classList.add('expanded');
+                        toggleBtn.querySelector('span').innerHTML = 'Show less';
+                    }
+                }
+            } else {
+                visibleCards.forEach((c, i) => {
+                    if (i >= LIMIT) c.classList.add('collapsed-hidden');
+                    else c.classList.remove('collapsed-hidden');
+                });
+                const extra = visibleCards.length - LIMIT;
+                if (toggleBtn) {
+                    toggleBtn.style.display = 'flex';
+                    toggleBtn.classList.remove('expanded');
+                    if (hiddenCountEl) hiddenCountEl.textContent = extra;
+                    toggleBtn.querySelector('span').innerHTML =
+                        'Show all (<span id="credentialsHiddenCount">' + extra + '</span> more)';
+                }
+            }
         }
 
         // Filter button clicks
@@ -296,19 +334,51 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else if (filterType === 'vendor') {
                         activeVendor = btn.dataset.value;
                     }
+                    isExpanded = false;  // re-collapse on filter change
                     applyFilters();
                 });
             });
         });
 
+        // Toggle expand / collapse
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                isExpanded = !isExpanded;
+                applyCollapse();
+                if (!isExpanded) {
+                    document.getElementById('credentials').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        }
+
         // Search input
         if (credSearch) {
             credSearch.addEventListener('input', () => {
                 searchTerm = credSearch.value.toLowerCase().trim();
+                isExpanded = false;  // re-collapse on new search
                 applyFilters();
             });
         }
+
+        // Initial collapse on page load
+        applyFilters();
     }
+
+    /* ----- Dynamic About Stats ----- */
+    (function dynamicStats() {
+        // Years of experience: since Feb 2014
+        const startDate = new Date(2014, 1); // Feb 2014
+        const years = Math.floor((new Date() - startDate) / (365.25 * 24 * 60 * 60 * 1000));
+        const elYears = document.getElementById('statYears');
+        if (elYears) elYears.dataset.count = years;
+
+        // Certs: count credential cards with data-type="certification"
+        const certCount = document.querySelectorAll('.credential-card[data-type="certification"]').length;
+        const elCerts = document.getElementById('statCerts');
+        if (elCerts) elCerts.dataset.count = certCount;
+
+        // Badges: will be updated after badges.json loads (see loadBadges)
+    })();
 
     /* ----- Smooth Scroll for anchor links ----- */
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -348,6 +418,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!Array.isArray(badgeIds) || badgeIds.length === 0) {
                 container.innerHTML = '<p style="color: var(--text-muted);">No badges found.</p>';
                 return;
+            }
+
+            // Update badges stat dynamically
+            const elBadges = document.getElementById('statBadges');
+            if (elBadges) {
+                elBadges.dataset.count = badgeIds.length;
+                // Re-animate if already visible
+                animateCounter(elBadges, badgeIds.length);
             }
 
             // Use Credly embedded badge iframes (share-badge IDs)
@@ -396,5 +474,65 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('visibilitychange', () => {
         // Matrix automatically slows when tab is hidden via browser throttling
     });
+
+    /* ----- Mobile Pagination (scroll-snap) ----- */
+    (function initMobilePagination() {
+        const isMobile = () => window.innerWidth <= 768;
+        if (!isMobile()) return;
+
+        const container = document.getElementById('pageSnapContainer');
+        if (!container) return;
+
+        // Activate paginated mode
+        document.documentElement.classList.add('mobile-paginated');
+
+        const sections = container.querySelectorAll(':scope > section, :scope > footer');
+        const dotsNav = document.getElementById('mobilePageDots');
+        const counter = document.getElementById('mobilePageCounter');
+        const currentEl = counter ? counter.querySelector('.mp-current') : null;
+        const totalEl = counter ? counter.querySelector('.mp-total') : null;
+
+        if (totalEl) totalEl.textContent = sections.length;
+
+        // Build dots
+        const labels = ['home','about','exp','edu','skills','creds','badges','lang','end'];
+        sections.forEach((_, i) => {
+            const dot = document.createElement('button');
+            dot.className = 'mobile-dot' + (i === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', labels[i] || 'section ' + (i + 1));
+            dot.addEventListener('click', () => {
+                sections[i].scrollIntoView({ behavior: 'smooth' });
+            });
+            dotsNav.appendChild(dot);
+        });
+
+        const dots = dotsNav.querySelectorAll('.mobile-dot');
+
+        // Track active section
+        let currentIndex = 0;
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && entry.intersectionRatio >= 0.35) {
+                    const idx = Array.from(sections).indexOf(entry.target);
+                    if (idx >= 0 && idx !== currentIndex) {
+                        currentIndex = idx;
+                        dots.forEach((d, j) => d.classList.toggle('active', j === idx));
+                        if (currentEl) currentEl.textContent = idx + 1;
+                    }
+                }
+            });
+        }, { root: container, threshold: 0.35 });
+
+        sections.forEach(s => observer.observe(s));
+
+        // Handle resize: remove pagination if window grows past mobile
+        window.addEventListener('resize', () => {
+            if (!isMobile()) {
+                document.documentElement.classList.remove('mobile-paginated');
+            } else {
+                document.documentElement.classList.add('mobile-paginated');
+            }
+        });
+    })();
 
 });

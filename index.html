@@ -25,12 +25,18 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.min.css" rel="stylesheet" integrity="sha512-8C9Btuz3eg3BFAJP4sFPDVTIqMFgCrQFOCwIEmOggJma5MDWA0l6VGEvBqnDOzWnKgdMb0lBbN/ME8yPl3GCjA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
     <link href="css/main.css" rel="stylesheet">
 </head>
 
 <body>
     <canvas id="matrix-bg"></canvas>
+
+    <!-- Mobile pagination dots (visible only on mobile) -->
+    <nav class="mobile-page-dots" id="mobilePageDots"></nav>
+    <div class="mobile-page-counter" id="mobilePageCounter">
+        <span class="mp-current">1</span> / <span class="mp-total">9</span>
+    </div>
 
     <!-- Navigation -->
     <nav id="navbar">
@@ -51,6 +57,9 @@
             <li><a href="#languages" class="nav-link" data-section="languages">./lang</a></li>
         </ul>
     </nav>
+
+    <!-- Page sections wrapper (becomes scroll-snap container on mobile) -->
+    <main class="page-snap-container" id="pageSnapContainer">
 
     <!-- HERO -->
     <section id="hero" class="section hero-section">
@@ -132,15 +141,15 @@
                     </div>
                     <div class="about-stats">
                         <div class="stat-item">
-                            <span class="stat-number" data-count="11">0</span><span class="stat-suffix">+</span>
+                            <span class="stat-number" id="statYears" data-count="11">0</span><span class="stat-suffix">+</span>
                             <span class="stat-label">Years Exp</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-number" data-count="47">0</span><span class="stat-suffix">+</span>
+                            <span class="stat-number" id="statBadges" data-count="47">0</span><span class="stat-suffix">+</span>
                             <span class="stat-label">Badges</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-number" data-count="30">0</span><span class="stat-suffix">+</span>
+                            <span class="stat-number" id="statCerts" data-count="30">0</span><span class="stat-suffix">+</span>
                             <span class="stat-label">Certs</span>
                         </div>
                     </div>
@@ -1767,6 +1776,12 @@
             </div>
 
             <!-- No results message -->
+            <!-- Show More / Less toggle -->
+            <button class="credentials-toggle" id="credentialsToggle" style="display:none;">
+                <i class="fas fa-chevron-down"></i>
+                <span>Show all (<span id="credentialsHiddenCount">0</span> more)</span>
+            </button>
+
             <div class="credentials-empty" id="credentialsEmpty" style="display:none;">
                 <i class="fas fa-search"></i>
                 <p>No credentials match your filters.</p>
@@ -1844,6 +1859,8 @@
             </div>
         </div>
     </footer>
+
+    </main><!-- /.page-snap-container -->
 
     <script src="js/main.js"></script>
 </body>
