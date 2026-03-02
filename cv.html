@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Karam Ajaj — CV</title>
+<style>
+    @page {
+        size: A4;
+        margin: 14mm 16mm 14mm 16mm;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 8.5pt;
+        line-height: 1.35;
+        color: #222;
+        background: #fff;
+    }
+
+    /* ---- HEADER ---- */
+    .header {
+        text-align: center;
+        border-bottom: 2pt solid #222;
+        padding-bottom: 6pt;
+        margin-bottom: 8pt;
+    }
+    .header h1 {
+        font-size: 20pt;
+        font-weight: 700;
+        letter-spacing: 1pt;
+        text-transform: uppercase;
+        margin-bottom: 2pt;
+    }
+    .header .subtitle {
+        font-size: 10pt;
+        color: #444;
+        margin-bottom: 4pt;
+    }
+    .header .contact {
+        font-size: 7.5pt;
+        color: #555;
+    }
+    .header .contact span { margin: 0 4pt; }
+
+    /* ---- SECTIONS ---- */
+    h2 {
+        font-size: 9.5pt;
+        text-transform: uppercase;
+        letter-spacing: 0.8pt;
+        border-bottom: 0.5pt solid #999;
+        padding-bottom: 2pt;
+        margin: 8pt 0 4pt;
+        color: #333;
+    }
+
+    /* ---- TWO-COLUMN LAYOUT ---- */
+    .columns {
+        display: flex;
+        gap: 14pt;
+    }
+    .col-main {
+        flex: 3;
+    }
+    .col-side {
+        flex: 1.2;
+    }
+
+    /* ---- EXPERIENCE ---- */
+    .job {
+        margin-bottom: 5pt;
+        page-break-inside: avoid;
+    }
+    .job-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+    }
+    .job-title {
+        font-weight: 700;
+        font-size: 8.5pt;
+    }
+    .job-date {
+        font-size: 7.5pt;
+        color: #555;
+        white-space: nowrap;
+    }
+    .job-company {
+        font-size: 8pt;
+        color: #444;
+        font-style: italic;
+    }
+    .job ul {
+        padding-left: 12pt;
+        margin-top: 1pt;
+    }
+    .job li {
+        margin-bottom: 0.5pt;
+        font-size: 8pt;
+    }
+    .clients {
+        font-size: 7.5pt;
+        color: #444;
+        margin-top: 2pt;
+        padding-left: 12pt;
+    }
+    .clients strong { font-weight: 600; color: #333; }
+
+    /* ---- EDUCATION ---- */
+    .edu {
+        margin-bottom: 3pt;
+    }
+    .edu-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+    }
+    .edu-school {
+        font-weight: 700;
+        font-size: 8.5pt;
+    }
+    .edu-date {
+        font-size: 7.5pt;
+        color: #555;
+    }
+    .edu-degree {
+        font-size: 8pt;
+        color: #444;
+    }
+
+    /* ---- SKILLS ---- */
+    .skills-list {
+        font-size: 8pt;
+        line-height: 1.5;
+    }
+    .skill-cat {
+        margin-bottom: 2pt;
+    }
+    .skill-cat strong {
+        font-size: 7.5pt;
+        text-transform: uppercase;
+        letter-spacing: 0.3pt;
+        color: #333;
+    }
+
+    /* ---- CERTIFICATIONS ---- */
+    .certs-list {
+        font-size: 7.5pt;
+        line-height: 1.45;
+    }
+    .cert-cat {
+        margin-bottom: 2pt;
+    }
+    .cert-cat strong {
+        font-weight: 600;
+        color: #333;
+    }
+
+    /* ---- LANGUAGES ---- */
+    .lang-list {
+        font-size: 8pt;
+    }
+    .lang-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1pt;
+    }
+
+    /* ---- SEPARATOR ---- */
+    .side-section { margin-bottom: 6pt; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <h1>Karam Ajaj</h1>
+    <div class="subtitle">Cloud &amp; Infrastructure Automation Consultant</div>
+    <div class="contact">
+        <span>Helmond, The Netherlands</span> |
+        <span>karam.ajaj@hotmail.com</span> |
+        <span>linkedin.com/in/karam-ajaj</span> |
+        <span>github.com/karam-ajaj</span>
+    </div>
+</div>
+
+<!-- TWO-COLUMN -->
+<div class="columns">
+<div class="col-main">
+
+<!-- PROFESSIONAL SUMMARY -->
+<h2>Professional Summary</h2>
+<p style="font-size:8pt; margin-bottom:4pt;">
+Cloud and infrastructure automation consultant with 11+ years of experience designing, implementing, and optimizing on-premises and cloud environments for enterprise clients. Certified in VMware (VCP – Cloud, DCV, NV, DM), Terraform, Kubernetes (CKA), and ITIL. Proven track record delivering end-to-end automation solutions across hybrid infrastructures using VMware Aria, Terraform, and Ansible. Adept at leading migration projects, building reusable IaC modules, and enabling client teams through documentation and workshops.
+</p>
+
+<!-- EXPERIENCE -->
+<h2>Professional Experience</h2>
+
+<div class="job">
+    <div class="job-header">
+        <span class="job-title">Cloud Management &amp; Automation Consultant</span>
+        <span class="job-date">Aug 2023 – Present</span>
+    </div>
+    <div class="job-company">ITQ — Beverwijk, The Netherlands</div>
+    <ul>
+        <li>Design and deliver end-to-end automation solutions using VMware Aria Automation, tailored to client infrastructure and governance requirements</li>
+        <li>Develop IaC modules for provisioning, configuration, and lifecycle management of virtualized and hybrid cloud environments</li>
+        <li>Lead cloud migration and modernization projects (vSphere, NSX, vSAN); build reusable libraries, modules, and API integrations</li>
+        <li>Deliver documentation, knowledge transfer sessions, and enablement workshops to client teams</li>
+    </ul>
+    <div class="clients">
+        <strong>Key client engagements:</strong>
+        Windesheim University (Aria Automation &amp; Orchestrator, student lab workflows) •
+        Rotterdam Harbour Holding (Terraform, Azure, CI/CD, disaster recovery) •
+        KPN (vRA 7 → Aria 8.x migration – evaluation, design, deployment, SQL data migration) •
+        Interconnect Services (Ansible Tower, dynamic inventories, Aria Operations dashboards) •
+        The Hague Municipality (catalog items, custom forms, day 2 actions) •
+        NN Group (Orchestrator actions, NSX-T onboarding workflows) •
+        Q8 Kuwait (Aria Operations – dashboards, alerts, reports) •
+        ASML (RHEV → Aria migration assessment, performance benchmarking)
+    </div>
+</div>
+
+<div class="job">
+    <div class="job-header">
+        <span class="job-title">Datacenter and Cloud Specialist</span>
+        <span class="job-date">Sep 2021 – Jul 2023</span>
+    </div>
+    <div class="job-company">Acknowledge — Waalre, The Netherlands</div>
+    <ul>
+        <li>Aligned architecture decisions with security teams and project engineers for compliant solutions</li>
+        <li>Managed full lifecycle and capacity planning for cloud and data center services</li>
+        <li>Authored commissioning guidelines, management procedures, and technical documentation</li>
+        <li>Trained and coached junior and medior data center engineers</li>
+    </ul>
+</div>
+
+<div class="job">
+    <div class="job-header">
+        <span class="job-title">System Engineer Cloud</span>
+        <span class="job-date">Apr 2020 – Sep 2021</span>
+    </div>
+    <div class="job-company">Copaco 2tCloud — Eindhoven, The Netherlands</div>
+    <ul>
+        <li>Designed, implemented, and monitored IT infrastructure; managed server, storage, and network lifecycle</li>
+        <li>Automated operational tasks with configuration management tools; developed new product implementations</li>
+    </ul>
+</div>
+
+<div class="job">
+    <div class="job-header">
+        <span class="job-title">ICT System Administrator</span>
+        <span class="job-date">Jul 2018 – Apr 2020</span>
+    </div>
+    <div class="job-company">Please Payroll — Helmond, The Netherlands</div>
+    <ul>
+        <li>Designed and maintained VMware infrastructure automation, documentation, and upgrade procedures</li>
+        <li>Monitored performance, ensured security (access controls, backups, firewalls), and managed server administration</li>
+    </ul>
+</div>
+
+<div class="job">
+    <div class="job-header">
+        <span class="job-title">Network and System Engineer</span>
+        <span class="job-date">Mar 2015 – Oct 2016</span>
+    </div>
+    <div class="job-company">Medical Care Company — Damascus, Syria</div>
+    <ul>
+        <li>Designed and executed network infrastructure migration; managed Java-based medical insurance platform</li>
+    </ul>
+</div>
+
+<div class="job">
+    <div class="job-header">
+        <span class="job-title">IT Specialist</span>
+        <span class="job-date">Feb 2014 – Mar 2015</span>
+    </div>
+    <div class="job-company">TechnoWare — Damascus, Syria</div>
+    <ul>
+        <li>Maintained 62 servers and managed networks for multiple organizations (1,000+ clients)</li>
+    </ul>
+</div>
+
+</div><!-- col-main -->
+
+<div class="col-side">
+
+<!-- SKILLS -->
+<div class="side-section">
+<h2>Technical Skills</h2>
+<div class="skills-list">
+    <div class="skill-cat">
+        <strong>Cloud &amp; Virtualization</strong><br>
+        VMware vSphere / ESXi, Aria Automation, Aria Operations, NSX-T, vSAN, Horizon (VDI), Azure
+    </div>
+    <div class="skill-cat">
+        <strong>Automation &amp; DevOps</strong><br>
+        Terraform, Ansible, CI/CD, Docker, Kubernetes, PowerShell, Python
+    </div>
+    <div class="skill-cat">
+        <strong>Networking &amp; Security</strong><br>
+        Fortinet / FortiGate, NSX, VPN, Firewall, AD / DNS / DHCP
+    </div>
+    <div class="skill-cat">
+        <strong>Programming</strong><br>
+        JavaScript, Python, SQL, C#, C++, HTML/CSS
+    </div>
+    <div class="skill-cat">
+        <strong>Platforms</strong><br>
+        Linux, Windows Server, Terraform Cloud, Ansible Tower
+    </div>
+</div>
+</div>
+
+<!-- CERTIFICATIONS -->
+<div class="side-section">
+<h2>Certifications</h2>
+<div class="certs-list">
+    <div class="cert-cat">
+        <strong>VMware (5)</strong><br>
+        VCP – Cloud Management &amp; Automation 2023,
+        VCP – Data Center Virtualization 2022,
+        VCP – Network Virtualization 2019,
+        VCP – Desktop &amp; Mobility 2019,
+        vSphere 6.5 Foundations
+    </div>
+    <div class="cert-cat">
+        <strong>Cloud &amp; DevOps</strong><br>
+        CKA – Certified Kubernetes Administrator,
+        HashiCorp Terraform Associate (003),
+        Oracle Cloud Infrastructure 2022
+    </div>
+    <div class="cert-cat">
+        <strong>Other</strong><br>
+        ITILv4 Foundation,
+        HPE ATP – Hybrid IT Solutions V2,
+        Zerto Certified Professional (5 certs),
+        Fortinet NSE 1 &amp; 2,
+        IBM Cloud &amp; Containers (5 certs)
+    </div>
+</div>
+</div>
+
+<!-- EDUCATION -->
+<div class="side-section">
+<h2>Education</h2>
+<div class="edu">
+    <div class="edu-header">
+        <span class="edu-school">Hack Your Future</span>
+        <span class="edu-date">2018</span>
+    </div>
+    <div class="edu-degree">Front End Web Development — Amsterdam, NL</div>
+</div>
+<div class="edu">
+    <div class="edu-header">
+        <span class="edu-school">Damascus University</span>
+        <span class="edu-date">2009 – 2015</span>
+    </div>
+    <div class="edu-degree">BSc Computer &amp; Automation Engineering — Damascus, SY</div>
+</div>
+</div>
+
+<!-- LANGUAGES -->
+<div class="side-section">
+<h2>Languages</h2>
+<div class="lang-list">
+    <div class="lang-item"><span>Arabic</span><span>Native</span></div>
+    <div class="lang-item"><span>English</span><span>Full Professional</span></div>
+    <div class="lang-item"><span>Dutch</span><span>Full Professional</span></div>
+</div>
+</div>
+
+</div><!-- col-side -->
+</div><!-- columns -->
+
+</body>
+</html>
