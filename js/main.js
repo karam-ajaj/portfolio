@@ -475,7 +475,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Matrix automatically slows when tab is hidden via browser throttling
     });
 
-    /* ----- Mobile Pagination (scroll-snap) ----- */
+    /* ----- Mobile Pagination (scroll-snap + tap-to-unlock) ----- */
     (function initMobilePagination() {
         const isMobile = () => window.innerWidth <= 768;
         if (!isMobile()) return;
@@ -483,16 +483,97 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = document.getElementById('pageSnapContainer');
         if (!container) return;
 
-        // Activate paginated mode
         document.documentElement.classList.add('mobile-paginated');
 
-        const sections = container.querySelectorAll(':scope > section, :scope > footer');
+        const sections = Array.from(container.querySelectorAll(':scope > section, :scope > footer'));
         const dotsNav = document.getElementById('mobilePageDots');
         const counter = document.getElementById('mobilePageCounter');
         const currentEl = counter ? counter.querySelector('.mp-current') : null;
         const totalEl = counter ? counter.querySelector('.mp-total') : null;
+        const tallSet = new Set();
 
         if (totalEl) totalEl.textContent = sections.length;
+
+        // Create ONE fixed dive button + fade overlay (not per-section)
+        const diveBtn = document.createElement('button');
+        diveBtn.className = 'section-dive-btn';
+        diveBtn.innerHTML = '<i class="fas fa-chevron-down"></i> scroll inside';
+        document.body.appendChild(diveBtn);
+
+        const fadeOverlay = document.createElement('div');
+        fadeOverlay.className = 'section-fade-overlay';
+        document.body.appendChild(fadeOverlay);
+
+        // Detect tall sections after layout settles
+        requestAnimationFrame(() => {
+            sections.forEach(sec => {
+                if (sec.tagName === 'FOOTER') return;
+                // Temporarily remove height constraint to measure natural height
+                sec.style.height = 'auto';
+                const natural = sec.scrollHeight;
+                sec.style.height = '';
+                if (natural > window.innerHeight + 20) {
+                    tallSet.add(sec);
+                }
+            });
+            // Show/hide button for initial section
+            updateDiveButton();
+        });
+
+        let currentIndex = 0;
+
+        function updateDiveButton() {
+            const sec = sections[currentIndex];
+            if (sec && tallSet.has(sec)) {
+                if (sec.classList.contains('section-unlocked')) {
+                    diveBtn.innerHTML = '<i class="fas fa-chevron-up"></i> lock & collapse';
+                    diveBtn.classList.add('unlocked');
+                    diveBtn.style.display = 'flex';
+                    fadeOverlay.style.display = 'none';
+                } else {
+                    diveBtn.innerHTML = '<i class="fas fa-chevron-down"></i> scroll inside';
+                    diveBtn.classList.remove('unlocked');
+                    diveBtn.style.display = 'flex';
+                    fadeOverlay.style.display = 'block';
+                }
+            } else {
+                diveBtn.style.display = 'none';
+                fadeOverlay.style.display = 'none';
+            }
+        }
+
+        diveBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const sec = sections[currentIndex];
+            if (!sec || !tallSet.has(sec)) return;
+            toggleUnlock(sec);
+        });
+
+        function toggleUnlock(sec) {
+            const isUnlocked = sec.classList.toggle('section-unlocked');
+            if (isUnlocked) {
+                // Disable container snap so inner scroll works
+                container.style.scrollSnapType = 'none';
+            } else {
+                lockSection(sec);
+            }
+            updateDiveButton();
+        }
+
+        function lockSection(sec) {
+            sec.classList.remove('section-unlocked');
+            sec.scrollTop = 0;
+            container.style.scrollSnapType = 'y mandatory';
+        }
+
+        function lockAllSections() {
+            sections.forEach(sec => {
+                if (sec.classList.contains('section-unlocked')) {
+                    lockSection(sec);
+                }
+            });
+            updateDiveButton();
+        }
 
         // Build dots
         const labels = ['home','about','exp','edu','skills','creds','badges','lang','end'];
@@ -501,23 +582,28 @@ document.addEventListener('DOMContentLoaded', () => {
             dot.className = 'mobile-dot' + (i === 0 ? ' active' : '');
             dot.setAttribute('aria-label', labels[i] || 'section ' + (i + 1));
             dot.addEventListener('click', () => {
+                lockAllSections();
                 sections[i].scrollIntoView({ behavior: 'smooth' });
             });
             dotsNav.appendChild(dot);
         });
-
         const dots = dotsNav.querySelectorAll('.mobile-dot');
 
         // Track active section
-        let currentIndex = 0;
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting && entry.intersectionRatio >= 0.35) {
-                    const idx = Array.from(sections).indexOf(entry.target);
+                    const idx = sections.indexOf(entry.target);
                     if (idx >= 0 && idx !== currentIndex) {
+                        // Lock previous section when navigating away
+                        const prevSec = sections[currentIndex];
+                        if (prevSec && prevSec.classList.contains('section-unlocked')) {
+                            lockSection(prevSec);
+                        }
                         currentIndex = idx;
                         dots.forEach((d, j) => d.classList.toggle('active', j === idx));
                         if (currentEl) currentEl.textContent = idx + 1;
+                        updateDiveButton();
                     }
                 }
             });
@@ -525,12 +611,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
         sections.forEach(s => observer.observe(s));
 
-        // Handle resize: remove pagination if window grows past mobile
+        // Edge detection: when unlocked section reaches bottom, re-lock and snap next
+        let touchStartY = 0;
+        const SWIPE_THRESHOLD = 40;
+
+        container.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        container.addEventListener('touchend', (e) => {
+            const sec = sections[currentIndex];
+            if (!sec || !sec.classList.contains('section-unlocked')) return;
+
+            const dy = touchStartY - (e.changedTouches[0]?.clientY ?? touchStartY);
+            if (Math.abs(dy) < SWIPE_THRESHOLD) return;
+
+            const atBottom = sec.scrollTop + sec.clientHeight >= sec.scrollHeight - 8;
+            const atTop = sec.scrollTop <= 2;
+
+            if (dy > 0 && atBottom && currentIndex < sections.length - 1) {
+                lockSection(sec);
+                updateDiveButton();
+                setTimeout(() => {
+                    sections[currentIndex + 1].scrollIntoView({ behavior: 'smooth' });
+                }, 50);
+            } else if (dy < 0 && atTop && currentIndex > 0) {
+                lockSection(sec);
+                updateDiveButton();
+                setTimeout(() => {
+                    sections[currentIndex - 1].scrollIntoView({ behavior: 'smooth' });
+                }, 50);
+            }
+        }, { passive: true });
+
+        // Handle resize
         window.addEventListener('resize', () => {
             if (!isMobile()) {
                 document.documentElement.classList.remove('mobile-paginated');
+                lockAllSections();
+                diveBtn.style.display = 'none';
+                fadeOverlay.style.display = 'none';
             } else {
                 document.documentElement.classList.add('mobile-paginated');
+                updateDiveButton();
             }
         });
     })();
