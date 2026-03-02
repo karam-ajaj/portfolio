@@ -2,7 +2,7 @@
 
 A modern, dark-themed portfolio and resume website built with vanilla HTML, CSS, and JavaScript. Features a terminal/coding aesthetic with matrix rain background, typing effects, scroll-reveal animations, and collapsible sections.
 
-**Live Demo**: [karam-ajaj.github.io/portfolio](https://karam-ajaj.github.io/portfolio/)
+**Live Demo**: [portfolio.vnerd.nl](https://portfolio.vnerd.nl/) | [karam-ajaj.github.io/portfolio](https://karam-ajaj.github.io/portfolio/)
 
 ---
 
@@ -32,10 +32,7 @@ portfolio/
 │   ├── certification/      # PDF certificates (VMware, Zerto, IBM, etc.)
 │   └── courses/            # Course completion certificates
 ├── vendor/                 # Third-party libraries (Font Awesome, etc.)
-├── tools/
-│   └── generate_sitemap.py # Sitemap generator
 ├── sitemap.xml             # SEO sitemap
-├── gulpfile.js             # Legacy Gulp configuration
 ├── LICENSE                 # MIT License
 └── README.md               # This file
 ```

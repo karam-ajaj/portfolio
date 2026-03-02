@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate sitemap.xml for cv.vnerd.nl.
+"""Generate sitemap.xml for portfolio.vnerd.nl.
 
 - Includes main pages and PDF assets under resrc/
 - Excludes temporary/low-value folders to keep the sitemap focused
@@ -13,7 +13,7 @@ import os
 import urllib.parse
 from pathlib import Path
 
-BASE_URL = "https://cv.vnerd.nl/"
+BASE_URL = "https://portfolio.vnerd.nl/"
 ROOT = Path(__file__).resolve().parents[1]
 SITEMAP = ROOT / "sitemap.xml"
 
