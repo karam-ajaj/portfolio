@@ -228,19 +228,87 @@ document.addEventListener('DOMContentLoaded', () => {
     skillFills.forEach(el => barObserver.observe(el));
     langFills.forEach(el => barObserver.observe(el));
 
-    /* ----- Cert / Course Group Toggle ----- */
-    document.querySelectorAll('.cert-group-toggle').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const expanded = btn.getAttribute('aria-expanded') === 'true';
-            const items = btn.nextElementSibling;
+    /* ----- Credentials Filter System ----- */
+    const credGrid = document.getElementById('credentialsGrid');
+    const credCount = document.getElementById('credentialsCount');
+    const credEmpty = document.getElementById('credentialsEmpty');
+    const credSearch = document.getElementById('credentialSearch');
 
-            // Toggle
-            btn.setAttribute('aria-expanded', !expanded);
-            if (items) {
-                items.classList.toggle('open');
-            }
+    if (credGrid) {
+        const cards = Array.from(credGrid.querySelectorAll('.credential-card'));
+        let activeType = 'all';
+        let activeVendor = 'all';
+        let searchTerm = '';
+
+        // Compute initial counts dynamically
+        (function initCounts() {
+            const totals = { all: cards.length, certification: 0, course: 0 };
+            const vendors = { all: cards.length };
+            cards.forEach(c => {
+                totals[c.dataset.type] = (totals[c.dataset.type] || 0) + 1;
+                vendors[c.dataset.vendor] = (vendors[c.dataset.vendor] || 0) + 1;
+            });
+            document.querySelectorAll('.filter-group').forEach(g => {
+                const ft = g.dataset.filter;
+                g.querySelectorAll('.filter-btn').forEach(btn => {
+                    const v = btn.dataset.value;
+                    const span = btn.querySelector('.filter-count');
+                    if (span) span.textContent = (ft === 'type' ? totals[v] : vendors[v]) || 0;
+                });
+            });
+        })();
+
+        function applyFilters() {
+            let visible = 0;
+            cards.forEach(card => {
+                const type = card.dataset.type;
+                const vendor = card.dataset.vendor;
+                const text = card.textContent.toLowerCase();
+
+                const matchType = activeType === 'all' || type === activeType;
+                const matchVendor = activeVendor === 'all' || vendor === activeVendor;
+                const matchSearch = !searchTerm || text.includes(searchTerm);
+
+                if (matchType && matchVendor && matchSearch) {
+                    card.classList.remove('hidden');
+                    visible++;
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            if (credCount) credCount.textContent = visible;
+            if (credEmpty) credEmpty.style.display = visible === 0 ? 'block' : 'none';
+            if (credGrid) credGrid.style.display = visible === 0 ? 'none' : '';
+        }
+
+        // Filter button clicks
+        document.querySelectorAll('.filter-group').forEach(group => {
+            const filterType = group.dataset.filter; // 'type' or 'vendor'
+            group.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Deactivate siblings
+                    group.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    if (filterType === 'type') {
+                        activeType = btn.dataset.value;
+                    } else if (filterType === 'vendor') {
+                        activeVendor = btn.dataset.value;
+                    }
+                    applyFilters();
+                });
+            });
         });
-    });
+
+        // Search input
+        if (credSearch) {
+            credSearch.addEventListener('input', () => {
+                searchTerm = credSearch.value.toLowerCase().trim();
+                applyFilters();
+            });
+        }
+    }
 
     /* ----- Smooth Scroll for anchor links ----- */
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {

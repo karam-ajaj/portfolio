@@ -890,107 +890,240 @@ ul { list-style: none; }
 }
 
 /* ========================================
-   CERTIFICATIONS & COURSES
+   CREDENTIALS (unified certs + courses)
    ======================================== */
-.certs-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1rem;
-}
 
-.cert-group {
+/* Filter Bar */
+.credentials-filter {
     background: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius);
-    overflow: hidden;
-    transition: border-color var(--transition);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
 }
 
-.cert-group:hover { border-color: rgba(0, 255, 136, 0.15); }
-
-.cert-group-toggle {
+.filter-row {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    width: 100%;
-    padding: 1rem 1.25rem;
-    background: none;
-    border: none;
-    color: var(--text-primary);
-    cursor: pointer;
-    font-family: var(--font-sans);
-    font-size: 0.95rem;
-    font-weight: 600;
-    text-align: left;
-    transition: background var(--transition);
+    padding: 0.5rem 0;
 }
 
-.cert-group-toggle:hover { background: rgba(255, 255, 255, 0.02); }
+.filter-row + .filter-row {
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
 
-.cert-group-icon {
-    width: 36px; height: 36px;
-    border-radius: var(--radius-sm);
-    background: rgba(0, 212, 255, 0.08);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.filter-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
     color: var(--accent-cyan);
-    font-size: 0.9rem;
+    min-width: 55px;
     flex-shrink: 0;
 }
 
-.cert-group-name { flex: 1; }
-
-.cert-count {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: var(--accent-green);
-    background: rgba(0, 255, 136, 0.08);
-    padding: 0.15rem 0.5rem;
-    border-radius: 3px;
+.filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
 }
 
-.cert-chevron {
+.filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.65rem;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all var(--transition);
+    white-space: nowrap;
+}
+
+.filter-btn:hover {
+    color: var(--text-primary);
+    border-color: rgba(0, 255, 136, 0.3);
+    background: rgba(0, 255, 136, 0.05);
+}
+
+.filter-btn.active {
+    color: var(--bg-primary);
+    background: var(--accent-green);
+    border-color: var(--accent-green);
+    font-weight: 600;
+}
+
+.filter-btn.active i { color: var(--bg-primary); }
+
+.filter-btn i { font-size: 0.65rem; }
+
+.filter-count {
+    font-size: 0.6rem;
+    opacity: 0.7;
+}
+
+.filter-btn.active .filter-count {
+    opacity: 0.9;
+}
+
+/* Search */
+.filter-search-wrap {
+    position: relative;
+    flex: 1;
+    max-width: 320px;
+}
+
+.filter-search-wrap > i {
+    position: absolute;
+    left: 0.7rem;
+    top: 50%;
+    transform: translateY(-50%);
     color: var(--text-muted);
     font-size: 0.7rem;
-    transition: transform var(--transition);
-    margin-left: 0.5rem;
+    pointer-events: none;
 }
 
-.cert-group-toggle[aria-expanded="true"] .cert-chevron {
-    transform: rotate(180deg);
+.filter-search {
+    width: 100%;
+    padding: 0.4rem 0.7rem 0.4rem 2rem;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    outline: none;
+    transition: border-color var(--transition);
 }
 
-.cert-group-items {
-    display: none;
-    padding: 0 1.25rem 1rem;
-    border-top: 1px solid var(--border-color);
+.filter-search::placeholder { color: var(--text-muted); }
+
+.filter-search:focus {
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 2px rgba(0, 255, 136, 0.1);
 }
 
-.cert-group-items.open {
-    display: block;
-    padding-top: 0.75rem;
+/* Status Counter */
+.credentials-status {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    padding-left: 0.25rem;
 }
 
-.cert-item {
-    display: block;
-    padding: 0.5rem 0.75rem;
-    margin-bottom: 0.25rem;
-    font-size: 0.82rem;
-    color: var(--text-secondary);
-    border-radius: var(--radius-sm);
-    transition: all var(--transition);
-}
-
-.cert-item:hover {
-    background: rgba(0, 255, 136, 0.05);
+.credentials-status span {
     color: var(--accent-green);
+    font-weight: 700;
 }
 
-.cert-item i {
-    margin-right: 0.5rem;
-    font-size: 0.7rem;
+/* Credentials Grid */
+.credentials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 0.6rem;
+}
+
+/* Credential Card */
+.credential-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 1rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    transition: all 0.25s ease;
+    text-decoration: none;
+    overflow: hidden;
+}
+
+.credential-card:hover {
+    border-color: rgba(0, 255, 136, 0.25);
+    background: rgba(0, 255, 136, 0.03);
+    transform: translateY(-1px);
+}
+
+.credential-card.hidden {
+    display: none;
+}
+
+/* Left accent strip */
+.credential-cert { border-left: 2px solid var(--accent-orange); }
+.credential-course { border-left: 2px solid var(--accent-cyan); }
+
+.credential-icon {
+    width: 32px; height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+.credential-cert .credential-icon {
+    background: rgba(255, 184, 108, 0.1);
     color: var(--accent-orange);
+}
+
+.credential-course .credential-icon {
+    background: rgba(0, 212, 255, 0.1);
+    color: var(--accent-cyan);
+}
+
+.credential-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.credential-name {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.credential-name i {
+    font-size: 0.65rem;
+    margin-right: 0.3rem;
+}
+
+.credential-cert .credential-name i { color: var(--accent-orange); }
+.credential-course .credential-name i { color: var(--accent-cyan); }
+
+.credential-meta {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Empty state */
+.credentials-empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-muted);
+}
+
+.credentials-empty i {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+.credentials-empty p {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
 }
 
 /* ========================================
@@ -1285,7 +1418,9 @@ ul { list-style: none; }
     .timeline-marker { left: -2rem; width: 26px; height: 26px; font-size: 0.65rem; }
 
     .education-grid { grid-template-columns: 1fr; }
-    .certs-grid { grid-template-columns: 1fr; }
+    .credentials-grid { grid-template-columns: 1fr; }
+    .filter-row { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .filter-search-wrap { max-width: 100%; }
     .languages-grid { grid-template-columns: 1fr; }
     .badges-container { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
 
