@@ -1,6 +1,5 @@
 /* ========================================
    KARAM AJAJ — Portfolio JS
-   Test 2: Horizontal Swipe (Stories-style)
    ======================================== */
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -476,158 +475,183 @@ document.addEventListener('DOMContentLoaded', () => {
         // Matrix automatically slows when tab is hidden via browser throttling
     });
 
-    /* =========================================================
-       MOBILE HORIZONTAL SWIPE  (Instagram stories style)
-       ========================================================= */
-    (function initHorizontalSwipe() {
+    /* ----- Mobile Pagination (scroll-snap + tap-to-unlock) ----- */
+    (function initMobilePagination() {
         const isMobile = () => window.innerWidth <= 768;
         if (!isMobile()) return;
 
         const container = document.getElementById('pageSnapContainer');
         if (!container) return;
 
-        document.documentElement.classList.add('mobile-hswipe');
+        document.documentElement.classList.add('mobile-paginated');
 
-        const panels = Array.from(container.querySelectorAll(':scope > section, :scope > footer'));
-        const LABELS = ['Home', 'About', 'Experience', 'Education', 'Skills', 'Credentials', 'Badges', 'Languages'];
+        const sections = Array.from(container.querySelectorAll(':scope > section, :scope > footer'));
+        const dotsNav = document.getElementById('mobilePageDots');
+        const counter = document.getElementById('mobilePageCounter');
+        const currentEl = counter ? counter.querySelector('.mp-current') : null;
+        const totalEl = counter ? counter.querySelector('.mp-total') : null;
+        const tallSet = new Set();
+
+        if (totalEl) totalEl.textContent = sections.length;
+
+        // Create ONE fixed dive button + fade overlay (not per-section)
+        const diveBtn = document.createElement('button');
+        diveBtn.className = 'section-dive-btn';
+        diveBtn.innerHTML = '<i class="fas fa-chevron-down"></i> scroll inside';
+        document.body.appendChild(diveBtn);
+
+        const fadeOverlay = document.createElement('div');
+        fadeOverlay.className = 'section-fade-overlay';
+        document.body.appendChild(fadeOverlay);
+
+        // Detect tall sections after layout settles
+        requestAnimationFrame(() => {
+            sections.forEach(sec => {
+                if (sec.tagName === 'FOOTER') return;
+                sec.style.height = 'auto';
+                const natural = sec.scrollHeight;
+                sec.style.height = '';
+                if (natural > window.innerHeight + 20) {
+                    tallSet.add(sec);
+                }
+            });
+            updateDiveButton();
+        });
 
         let currentIndex = 0;
 
-        /* ---- Build bottom indicator bar ---- */
-        const bar = document.createElement('div');
-        bar.className = 'hswipe-bar';
+        function updateDiveButton() {
+            const sec = sections[currentIndex];
+            if (sec && tallSet.has(sec)) {
+                if (sec.classList.contains('section-unlocked')) {
+                    diveBtn.innerHTML = '<i class="fas fa-chevron-up"></i> lock & collapse';
+                    diveBtn.classList.add('unlocked');
+                    diveBtn.style.display = 'flex';
+                    fadeOverlay.style.display = 'none';
+                } else {
+                    diveBtn.innerHTML = '<i class="fas fa-chevron-down"></i> scroll inside';
+                    diveBtn.classList.remove('unlocked');
+                    diveBtn.style.display = 'flex';
+                    fadeOverlay.style.display = 'block';
+                }
+            } else {
+                diveBtn.style.display = 'none';
+                fadeOverlay.style.display = 'none';
+            }
+        }
 
-        const label = document.createElement('div');
-        label.className = 'hswipe-label';
-        label.textContent = LABELS[0] || 'Home';
-        bar.appendChild(label);
-
-        const dotsWrap = document.createElement('div');
-        dotsWrap.className = 'hswipe-dots';
-
-        const dots = [];
-        panels.forEach((_, i) => {
-            const d = document.createElement('button');
-            d.className = 'hswipe-dot' + (i === 0 ? ' active' : '');
-            d.setAttribute('aria-label', LABELS[i] || 'Section ' + (i + 1));
-            d.addEventListener('click', () => scrollToPanel(i));
-            dotsWrap.appendChild(d);
-            dots.push(d);
+        diveBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const sec = sections[currentIndex];
+            if (!sec || !tallSet.has(sec)) return;
+            toggleUnlock(sec);
         });
 
-        bar.appendChild(dotsWrap);
-        document.body.appendChild(bar);
-
-        /* ---- Edge arrows ---- */
-        const arrowL = document.createElement('div');
-        arrowL.className = 'hswipe-arrow hswipe-arrow-left hidden';
-        arrowL.innerHTML = '<i class="fas fa-chevron-left"></i>';
-        document.body.appendChild(arrowL);
-
-        const arrowR = document.createElement('div');
-        arrowR.className = 'hswipe-arrow hswipe-arrow-right hint';
-        arrowR.innerHTML = '<i class="fas fa-chevron-right"></i>';
-        document.body.appendChild(arrowR);
-
-        /* ---- Navigate to panel ---- */
-        function scrollToPanel(idx) {
-            if (idx < 0 || idx >= panels.length) return;
-            panels[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+        function toggleUnlock(sec) {
+            const isUnlocked = sec.classList.toggle('section-unlocked');
+            if (isUnlocked) {
+                container.style.scrollSnapType = 'none';
+            } else {
+                lockSection(sec);
+            }
+            updateDiveButton();
         }
 
-        /* ---- Update active state ---- */
-        function setActive(idx) {
-            if (idx === currentIndex) return;
-            currentIndex = idx;
-            dots.forEach((d, j) => d.classList.toggle('active', j === idx));
-            label.textContent = LABELS[idx] || '';
-
-            // Arrows visibility
-            arrowL.classList.toggle('hidden', idx === 0);
-            arrowR.classList.toggle('hidden', idx === panels.length - 1);
-            arrowR.classList.remove('hint');
+        function lockSection(sec) {
+            sec.classList.remove('section-unlocked');
+            sec.scrollTop = 0;
+            container.style.scrollSnapType = 'y mandatory';
         }
 
-        /* ---- Observe which panel is in view ---- */
+        function lockAllSections() {
+            sections.forEach(sec => {
+                if (sec.classList.contains('section-unlocked')) {
+                    lockSection(sec);
+                }
+            });
+            updateDiveButton();
+        }
+
+        // Build dots
+        const labels = ['home','about','exp','edu','skills','creds','badges','lang','end'];
+        sections.forEach((_, i) => {
+            const dot = document.createElement('button');
+            dot.className = 'mobile-dot' + (i === 0 ? ' active' : '');
+            dot.setAttribute('aria-label', labels[i] || 'section ' + (i + 1));
+            dot.addEventListener('click', () => {
+                lockAllSections();
+                sections[i].scrollIntoView({ behavior: 'smooth' });
+            });
+            dotsNav.appendChild(dot);
+        });
+        const dots = dotsNav.querySelectorAll('.mobile-dot');
+
+        // Track active section
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting && entry.intersectionRatio >= 0.55) {
-                    const idx = panels.indexOf(entry.target);
-                    if (idx >= 0) setActive(idx);
+                if (entry.isIntersecting && entry.intersectionRatio >= 0.35) {
+                    const idx = sections.indexOf(entry.target);
+                    if (idx >= 0 && idx !== currentIndex) {
+                        const prevSec = sections[currentIndex];
+                        if (prevSec && prevSec.classList.contains('section-unlocked')) {
+                            lockSection(prevSec);
+                        }
+                        currentIndex = idx;
+                        dots.forEach((d, j) => d.classList.toggle('active', j === idx));
+                        if (currentEl) currentEl.textContent = idx + 1;
+                        updateDiveButton();
+                    }
                 }
             });
-        }, { root: container, threshold: 0.55 });
+        }, { root: container, threshold: 0.35 });
 
-        panels.forEach(p => observer.observe(p));
+        sections.forEach(s => observer.observe(s));
 
-        /* ---- Also listen to scrollend for precise tracking ---- */
-        let scrollTimer;
-        container.addEventListener('scroll', () => {
-            clearTimeout(scrollTimer);
-            scrollTimer = setTimeout(() => {
-                // Find which panel is closest to left edge
-                const scrollLeft = container.scrollLeft;
-                let closest = 0;
-                let minDist = Infinity;
-                panels.forEach((p, i) => {
-                    const dist = Math.abs(p.offsetLeft - scrollLeft);
-                    if (dist < minDist) { minDist = dist; closest = i; }
-                });
-                setActive(closest);
-            }, 80);
+        // Edge detection
+        let touchStartY = 0;
+        const SWIPE_THRESHOLD = 40;
+
+        container.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
         }, { passive: true });
 
-        /* ---- Keyboard navigation ---- */
-        document.addEventListener('keydown', (e) => {
-            if (!isMobile()) return;
-            if (e.key === 'ArrowRight' && currentIndex < panels.length - 1) {
-                scrollToPanel(currentIndex + 1);
-            } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
-                scrollToPanel(currentIndex - 1);
+        container.addEventListener('touchend', (e) => {
+            const sec = sections[currentIndex];
+            if (!sec || !sec.classList.contains('section-unlocked')) return;
+
+            const dy = touchStartY - (e.changedTouches[0]?.clientY ?? touchStartY);
+            if (Math.abs(dy) < SWIPE_THRESHOLD) return;
+
+            const atBottom = sec.scrollTop + sec.clientHeight >= sec.scrollHeight - 8;
+            const atTop = sec.scrollTop <= 2;
+
+            if (dy > 0 && atBottom && currentIndex < sections.length - 1) {
+                lockSection(sec);
+                updateDiveButton();
+                setTimeout(() => {
+                    sections[currentIndex + 1].scrollIntoView({ behavior: 'smooth' });
+                }, 50);
+            } else if (dy < 0 && atTop && currentIndex > 0) {
+                lockSection(sec);
+                updateDiveButton();
+                setTimeout(() => {
+                    sections[currentIndex - 1].scrollIntoView({ behavior: 'smooth' });
+                }, 50);
             }
-        });
+        }, { passive: true });
 
-        /* ---- Handle nav link clicks: navigate to the correct panel ---- */
-        document.querySelectorAll('.nav-links .nav-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                if (!isMobile()) return;
-                e.preventDefault();
-                const sectionId = link.getAttribute('data-section') || link.getAttribute('href')?.replace('#', '');
-                if (!sectionId) return;
-                const target = document.getElementById(sectionId);
-                if (!target) return;
-                const idx = panels.indexOf(target);
-                if (idx >= 0) {
-                    scrollToPanel(idx);
-                    // Close mobile hamburger menu
-                    if (navToggle) navToggle.classList.remove('active');
-                    if (navLinksEl) navLinksEl.classList.remove('open');
-                }
-            });
-        });
-
-        /* ---- Handle resize ---- */
+        // Handle resize
         window.addEventListener('resize', () => {
             if (!isMobile()) {
-                document.documentElement.classList.remove('mobile-hswipe');
-                bar.style.display = 'none';
-                arrowL.style.display = 'none';
-                arrowR.style.display = 'none';
+                document.documentElement.classList.remove('mobile-paginated');
+                lockAllSections();
+                diveBtn.style.display = 'none';
+                fadeOverlay.style.display = 'none';
             } else {
-                document.documentElement.classList.add('mobile-hswipe');
-                bar.style.display = '';
-                arrowL.style.display = '';
-                arrowR.style.display = '';
+                document.documentElement.classList.add('mobile-paginated');
+                updateDiveButton();
             }
         });
-
-        /* ---- Make all reveal elements visible immediately (no scroll trigger issue) ---- */
-        requestAnimationFrame(() => {
-            document.querySelectorAll('.reveal-up, .reveal-left, .reveal-right').forEach(el => {
-                el.classList.add('visible');
-            });
-        });
-
     })();
 
 });

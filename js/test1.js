@@ -1,6 +1,5 @@
 /* ========================================
    KARAM AJAJ — Portfolio JS
-   Test 2: Horizontal Swipe (Stories-style)
    ======================================== */
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -476,158 +475,73 @@ document.addEventListener('DOMContentLoaded', () => {
         // Matrix automatically slows when tab is hidden via browser throttling
     });
 
-    /* =========================================================
-       MOBILE HORIZONTAL SWIPE  (Instagram stories style)
-       ========================================================= */
-    (function initHorizontalSwipe() {
+    /* ----- Mobile: Bottom Tab Bar + Experience Collapse ----- */
+    (function initMobileEnhancements() {
         const isMobile = () => window.innerWidth <= 768;
         if (!isMobile()) return;
 
-        const container = document.getElementById('pageSnapContainer');
-        if (!container) return;
+        // --- Bottom Tab Bar ---
+        const tabs = [
+            { id: 'hero',        icon: 'fas fa-terminal',       label: 'home' },
+            { id: 'about',       icon: 'fas fa-user',           label: 'about' },
+            { id: 'experience',  icon: 'fas fa-briefcase',      label: 'work' },
+            { id: 'education',   icon: 'fas fa-graduation-cap', label: 'edu' },
+            { id: 'skills',      icon: 'fas fa-code',           label: 'skills' },
+            { id: 'credentials', icon: 'fas fa-certificate',    label: 'certs' },
+            { id: 'badges',      icon: 'fas fa-id-badge',       label: 'badges' },
+            { id: 'languages',   icon: 'fas fa-language',       label: 'lang' }
+        ];
 
-        document.documentElement.classList.add('mobile-hswipe');
+        const bar = document.createElement('nav');
+        bar.className = 'mobile-tab-bar';
+        bar.setAttribute('aria-label', 'Section navigation');
 
-        const panels = Array.from(container.querySelectorAll(':scope > section, :scope > footer'));
-        const LABELS = ['Home', 'About', 'Experience', 'Education', 'Skills', 'Credentials', 'Badges', 'Languages'];
-
-        let currentIndex = 0;
-
-        /* ---- Build bottom indicator bar ---- */
-        const bar = document.createElement('div');
-        bar.className = 'hswipe-bar';
-
-        const label = document.createElement('div');
-        label.className = 'hswipe-label';
-        label.textContent = LABELS[0] || 'Home';
-        bar.appendChild(label);
-
-        const dotsWrap = document.createElement('div');
-        dotsWrap.className = 'hswipe-dots';
-
-        const dots = [];
-        panels.forEach((_, i) => {
-            const d = document.createElement('button');
-            d.className = 'hswipe-dot' + (i === 0 ? ' active' : '');
-            d.setAttribute('aria-label', LABELS[i] || 'Section ' + (i + 1));
-            d.addEventListener('click', () => scrollToPanel(i));
-            dotsWrap.appendChild(d);
-            dots.push(d);
+        const tabButtons = tabs.map((t, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'tab-item' + (i === 0 ? ' active' : '');
+            btn.innerHTML = `<i class="${t.icon}"></i><span>${t.label}</span>`;
+            btn.setAttribute('aria-label', t.label);
+            btn.addEventListener('click', () => {
+                const target = document.getElementById(t.id);
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+            });
+            bar.appendChild(btn);
+            return btn;
         });
 
-        bar.appendChild(dotsWrap);
         document.body.appendChild(bar);
 
-        /* ---- Edge arrows ---- */
-        const arrowL = document.createElement('div');
-        arrowL.className = 'hswipe-arrow hswipe-arrow-left hidden';
-        arrowL.innerHTML = '<i class="fas fa-chevron-left"></i>';
-        document.body.appendChild(arrowL);
+        // Scroll spy: highlight active tab
+        const sectionEls = tabs.map(t => document.getElementById(t.id)).filter(Boolean);
+        let activeIdx = 0;
 
-        const arrowR = document.createElement('div');
-        arrowR.className = 'hswipe-arrow hswipe-arrow-right hint';
-        arrowR.innerHTML = '<i class="fas fa-chevron-right"></i>';
-        document.body.appendChild(arrowR);
-
-        /* ---- Navigate to panel ---- */
-        function scrollToPanel(idx) {
-            if (idx < 0 || idx >= panels.length) return;
-            panels[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
-        }
-
-        /* ---- Update active state ---- */
-        function setActive(idx) {
-            if (idx === currentIndex) return;
-            currentIndex = idx;
-            dots.forEach((d, j) => d.classList.toggle('active', j === idx));
-            label.textContent = LABELS[idx] || '';
-
-            // Arrows visibility
-            arrowL.classList.toggle('hidden', idx === 0);
-            arrowR.classList.toggle('hidden', idx === panels.length - 1);
-            arrowR.classList.remove('hint');
-        }
-
-        /* ---- Observe which panel is in view ---- */
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                if (entry.isIntersecting && entry.intersectionRatio >= 0.55) {
-                    const idx = panels.indexOf(entry.target);
-                    if (idx >= 0) setActive(idx);
+                if (entry.isIntersecting) {
+                    const idx = sectionEls.indexOf(entry.target);
+                    if (idx >= 0 && idx !== activeIdx) {
+                        activeIdx = idx;
+                        tabButtons.forEach((b, j) => b.classList.toggle('active', j === idx));
+                    }
                 }
             });
-        }, { root: container, threshold: 0.55 });
+        }, { threshold: 0.2, rootMargin: '-20% 0px -60% 0px' });
 
-        panels.forEach(p => observer.observe(p));
+        sectionEls.forEach(s => observer.observe(s));
 
-        /* ---- Also listen to scrollend for precise tracking ---- */
-        let scrollTimer;
-        container.addEventListener('scroll', () => {
-            clearTimeout(scrollTimer);
-            scrollTimer = setTimeout(() => {
-                // Find which panel is closest to left edge
-                const scrollLeft = container.scrollLeft;
-                let closest = 0;
-                let minDist = Infinity;
-                panels.forEach((p, i) => {
-                    const dist = Math.abs(p.offsetLeft - scrollLeft);
-                    if (dist < minDist) { minDist = dist; closest = i; }
-                });
-                setActive(closest);
-            }, 80);
-        }, { passive: true });
-
-        /* ---- Keyboard navigation ---- */
-        document.addEventListener('keydown', (e) => {
-            if (!isMobile()) return;
-            if (e.key === 'ArrowRight' && currentIndex < panels.length - 1) {
-                scrollToPanel(currentIndex + 1);
-            } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
-                scrollToPanel(currentIndex - 1);
-            }
-        });
-
-        /* ---- Handle nav link clicks: navigate to the correct panel ---- */
-        document.querySelectorAll('.nav-links .nav-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                if (!isMobile()) return;
-                e.preventDefault();
-                const sectionId = link.getAttribute('data-section') || link.getAttribute('href')?.replace('#', '');
-                if (!sectionId) return;
-                const target = document.getElementById(sectionId);
-                if (!target) return;
-                const idx = panels.indexOf(target);
-                if (idx >= 0) {
-                    scrollToPanel(idx);
-                    // Close mobile hamburger menu
-                    if (navToggle) navToggle.classList.remove('active');
-                    if (navLinksEl) navLinksEl.classList.remove('open');
-                }
+        // --- Experience: tap to expand/collapse jobs ---
+        document.querySelectorAll('.timeline-item').forEach(item => {
+            const header = item.querySelector('.timeline-header-box');
+            if (!header) return;
+            header.addEventListener('click', () => {
+                item.classList.toggle('exp-expanded');
             });
         });
 
-        /* ---- Handle resize ---- */
+        // --- Handle resize: remove tab bar if going to desktop ---
         window.addEventListener('resize', () => {
-            if (!isMobile()) {
-                document.documentElement.classList.remove('mobile-hswipe');
-                bar.style.display = 'none';
-                arrowL.style.display = 'none';
-                arrowR.style.display = 'none';
-            } else {
-                document.documentElement.classList.add('mobile-hswipe');
-                bar.style.display = '';
-                arrowL.style.display = '';
-                arrowR.style.display = '';
-            }
+            bar.style.display = isMobile() ? 'flex' : 'none';
         });
-
-        /* ---- Make all reveal elements visible immediately (no scroll trigger issue) ---- */
-        requestAnimationFrame(() => {
-            document.querySelectorAll('.reveal-up, .reveal-left, .reveal-right').forEach(el => {
-                el.classList.add('visible');
-            });
-        });
-
     })();
 
 });

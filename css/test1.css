@@ -1522,224 +1522,147 @@ ul { list-style: none; }
 }
 
 /* ========================================
-   NAV QUICK-LINKS (social + CV in navbar)
-   ======================================== */
-
-.nav-quick-links {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    margin-left: 0.75rem;
-}
-
-.nav-quick-links a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-color);
-    color: var(--text-secondary);
-    font-size: 0.75rem;
-    transition: all var(--transition);
-}
-
-.nav-quick-links a:hover,
-.nav-quick-links a:active {
-    border-color: var(--accent-green);
-    color: var(--accent-green);
-    background: rgba(0, 255, 136, 0.06);
-}
-
-/* PDF icon gets purple accent to match download button style */
-.nav-quick-links a[download] {
-    border-color: rgba(189, 147, 249, 0.4);
-    color: var(--accent-purple);
-}
-
-.nav-quick-links a[download]:hover,
-.nav-quick-links a[download]:active {
-    border-color: var(--accent-purple);
-    background: rgba(189, 147, 249, 0.1);
-}
-
-/* ========================================
-   MOBILE HORIZONTAL SWIPE (stories-style)
+   MOBILE ENHANCEMENTS - Natural Scroll
    ======================================== */
 @media (max-width: 768px) {
-    html.mobile-hswipe,
-    html.mobile-hswipe body {
-        overflow: hidden;
-        height: 100vh;
-        height: 100dvh;
-    }
 
-    /* Container becomes a horizontal scroll-snap rail */
-    html.mobile-hswipe .page-snap-container {
+    /* --- Hero: compact so social links fit on all phones --- */
+    .hero-section {
+        min-height: 100vh;
+        min-height: 100dvh;
+        padding-top: 56px;
+    }
+    .hero-content { gap: 0.6rem !important; }
+    .terminal-window { margin-bottom: 0; }
+    .terminal-header { padding: 0.3rem 0.6rem; }
+    .terminal-body { padding: 0.4rem 0.6rem !important; font-size: 0.7rem !important; }
+    .terminal-line { margin-bottom: 0.1rem; }
+    .hero-info { text-align: center; }
+    .hero-description { font-size: 0.8rem; margin: 0.3rem 0; line-height: 1.4; }
+    .hero-cta {
         display: flex;
-        flex-direction: row;
-        height: 100vh;
-        height: 100dvh;
-        overflow-x: scroll;
-        overflow-y: hidden;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;          /* Firefox */
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.35rem;
     }
+    .hero-cta .btn { font-size: 0.7rem; padding: 0.4rem 0.7rem; }
+    .hero-cta .btn i { font-size: 0.65rem; }
+    .social-links { margin-top: 0.3rem; gap: 0.5rem; }
+    .social-icon { font-size: 0.9rem; width: 32px; height: 32px; }
+    .scroll-indicator { display: none !important; }
 
-    html.mobile-hswipe .page-snap-container::-webkit-scrollbar {
-        display: none;                  /* Chrome / Safari */
-    }
-
-    /* Each section is one full-screen "page" */
-    html.mobile-hswipe .page-snap-container > section,
-    html.mobile-hswipe .page-snap-container > footer {
-        scroll-snap-align: start;
-        scroll-snap-stop: always;
-        min-width: 100vw;
-        width: 100vw;
-        height: 100vh;
-        height: 100dvh;
-        overflow-y: auto;
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
-        flex-shrink: 0;
-        box-sizing: border-box;
-        position: relative;
-    }
-
-    /* Hero adjustments inside the swipe panel */
-    html.mobile-hswipe .hero-section {
-        min-height: 0;
-        height: 100%;
-        padding-top: var(--nav-height);
-        padding-bottom: 3.5rem;       /* room for bottom bar */
-    }
-
-    /* Sections get bottom padding for the indicator bar */
-    html.mobile-hswipe .page-snap-container > section {
-        padding-bottom: 3.5rem;
-    }
-
-    /* Hide the normal scroll indicator on hero */
-    html.mobile-hswipe .scroll-indicator {
+    /* --- Experience: collapsible jobs on mobile --- */
+    .timeline-item .timeline-details,
+    .timeline-item .tech-tags,
+    .timeline-item .client-projects {
         display: none;
     }
 
-    /* ---- Bottom Indicator Bar ---- */
-    .hswipe-bar {
+    .timeline-item.exp-expanded .timeline-details,
+    .timeline-item.exp-expanded .tech-tags,
+    .timeline-item.exp-expanded .client-projects {
+        display: block;
+    }
+
+    .timeline-header-box {
+        cursor: pointer;
+        position: relative;
+        padding-right: 1.5rem;
+    }
+
+    .timeline-header-box::after {
+        content: '\f078';
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        position: absolute;
+        right: 0;
+        top: 0.5rem;
+        color: var(--accent-green);
+        font-size: 0.65rem;
+        transition: transform 0.3s;
+    }
+
+    .timeline-item.exp-expanded .timeline-header-box::after {
+        transform: rotate(180deg);
+    }
+
+    /* Subtle hint that jobs are tappable */
+    .timeline-content {
+        transition: border-color 0.3s;
+    }
+    .timeline-item:not(.exp-expanded) .timeline-content:active {
+        border-color: var(--accent-green);
+    }
+
+    /* --- Badges: show 6 on mobile (not 12) --- */
+    .badges-collapsed .badge-card:nth-child(n+7) {
+        display: none;
+    }
+
+    /* --- Bottom Tab Bar --- */
+    .mobile-tab-bar {
         position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
         z-index: 10001;
-        background: rgba(10, 10, 15, 0.92);
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        height: 46px;
+        background: rgba(10, 10, 15, 0.96);
+        border-top: 1px solid rgba(0, 255, 136, 0.12);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
-        border-top: 1px solid var(--border-color);
-        display: none;                 /* shown by JS */
+        padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+
+    .tab-item {
+        display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 0.4rem 0 0.55rem;
-    }
-
-    html.mobile-hswipe .hswipe-bar {
-        display: flex;
-    }
-
-    /* Section label */
-    .hswipe-label {
-        font-family: var(--font-mono);
-        font-size: 0.6rem;
-        color: var(--accent-green);
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        margin-bottom: 0.35rem;
-        transition: opacity 0.25s;
-    }
-
-    /* Progress dots row */
-    .hswipe-dots {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-    }
-
-    .hswipe-dot {
-        width: 18px;
-        height: 3px;
-        border-radius: 2px;
-        background: rgba(255, 255, 255, 0.12);
-        border: none;
-        padding: 0;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .hswipe-dot.active {
-        background: var(--accent-green);
-        width: 28px;
-        box-shadow: 0 0 8px rgba(0, 255, 136, 0.35);
-    }
-
-    /* Swipe hint arrow overlays */
-    .hswipe-arrow {
-        position: fixed;
-        top: 50%;
-        transform: translateY(-50%);
-        z-index: 10002;
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        background: rgba(10, 10, 15, 0.6);
-        border: 1px solid rgba(0, 255, 136, 0.2);
-        color: var(--accent-green);
-        display: none;
-        align-items: center;
         justify-content: center;
-        font-size: 0.7rem;
-        pointer-events: none;
-        opacity: 0.5;
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
+        flex: 1;
+        height: 100%;
+        color: rgba(255, 255, 255, 0.3);
+        font-size: 0.95rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        transition: color 0.2s;
+        padding: 0;
+        gap: 1px;
+        -webkit-tap-highlight-color: transparent;
     }
 
-    html.mobile-hswipe .hswipe-arrow {
-        display: flex;
+    .tab-item span {
+        font-size: 0.45rem;
+        font-family: var(--font-mono);
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
     }
 
-    .hswipe-arrow-left {
-        left: 0.35rem;
+    .tab-item.active {
+        color: var(--accent-green);
     }
 
-    .hswipe-arrow-right {
-        right: 0.35rem;
-    }
+    /* Bottom spacing so content isn't behind the tab bar */
+    .footer { padding-bottom: 3rem; }
 
-    .hswipe-arrow.hidden {
-        display: none;
-    }
-
-    /* Subtle swipe-hint animation on first load */
-    @keyframes swipe-hint {
-        0%, 100% { transform: translateY(-50%) translateX(0); opacity: 0.5; }
-        50% { transform: translateY(-50%) translateX(-3px); opacity: 0.9; }
-    }
-
-    .hswipe-arrow-right.hint {
-        animation: swipe-hint 1.5s ease-in-out 3;
+    /* Old pagination elements: always hidden */
+    .mobile-page-dots,
+    .mobile-page-counter,
+    .section-dive-btn,
+    .section-fade-overlay {
+        display: none !important;
     }
 }
 
-/* Hide horizontal-swipe elements on desktop */
+/* Hide mobile elements on desktop */
 @media (min-width: 769px) {
-    .hswipe-bar,
-    .hswipe-arrow,
+    .mobile-tab-bar,
     .mobile-page-dots,
-    .mobile-page-counter {
-        display: none !important;
-    }
+    .mobile-page-counter,
     .section-dive-btn,
     .section-fade-overlay {
         display: none !important;

@@ -1522,220 +1522,164 @@ ul { list-style: none; }
 }
 
 /* ========================================
-   NAV QUICK-LINKS (social + CV in navbar)
-   ======================================== */
-
-.nav-quick-links {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    margin-left: 0.75rem;
-}
-
-.nav-quick-links a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border-color);
-    color: var(--text-secondary);
-    font-size: 0.75rem;
-    transition: all var(--transition);
-}
-
-.nav-quick-links a:hover,
-.nav-quick-links a:active {
-    border-color: var(--accent-green);
-    color: var(--accent-green);
-    background: rgba(0, 255, 136, 0.06);
-}
-
-/* PDF icon gets purple accent to match download button style */
-.nav-quick-links a[download] {
-    border-color: rgba(189, 147, 249, 0.4);
-    color: var(--accent-purple);
-}
-
-.nav-quick-links a[download]:hover,
-.nav-quick-links a[download]:active {
-    border-color: var(--accent-purple);
-    background: rgba(189, 147, 249, 0.1);
-}
-
-/* ========================================
-   MOBILE HORIZONTAL SWIPE (stories-style)
+   MOBILE PAGINATION (scroll-snap + unlock)
    ======================================== */
 @media (max-width: 768px) {
-    html.mobile-hswipe,
-    html.mobile-hswipe body {
+    html.mobile-paginated,
+    html.mobile-paginated body {
         overflow: hidden;
         height: 100vh;
         height: 100dvh;
     }
 
-    /* Container becomes a horizontal scroll-snap rail */
-    html.mobile-hswipe .page-snap-container {
-        display: flex;
-        flex-direction: row;
+    html.mobile-paginated .page-snap-container {
         height: 100vh;
         height: 100dvh;
-        overflow-x: scroll;
-        overflow-y: hidden;
-        scroll-snap-type: x mandatory;
+        overflow-y: scroll;
+        scroll-snap-type: y mandatory;
         -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;          /* Firefox */
     }
 
-    html.mobile-hswipe .page-snap-container::-webkit-scrollbar {
-        display: none;                  /* Chrome / Safari */
-    }
-
-    /* Each section is one full-screen "page" */
-    html.mobile-hswipe .page-snap-container > section,
-    html.mobile-hswipe .page-snap-container > footer {
+    /* LOCKED: fixed height clips content */
+    html.mobile-paginated .page-snap-container > section {
         scroll-snap-align: start;
         scroll-snap-stop: always;
-        min-width: 100vw;
-        width: 100vw;
         height: 100vh;
         height: 100dvh;
-        overflow-y: auto;
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
-        flex-shrink: 0;
-        box-sizing: border-box;
+        overflow: hidden;
         position: relative;
+        box-sizing: border-box;
     }
 
-    /* Hero adjustments inside the swipe panel */
-    html.mobile-hswipe .hero-section {
+    /* UNLOCKED: same height, but inner-scrollable */
+    html.mobile-paginated .page-snap-container > section.section-unlocked {
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Footer doesn't need full height */
+    html.mobile-paginated .page-snap-container > footer {
+        scroll-snap-align: start;
+        height: auto;
         min-height: 0;
-        height: 100%;
-        padding-top: var(--nav-height);
-        padding-bottom: 3.5rem;       /* room for bottom bar */
     }
 
-    /* Sections get bottom padding for the indicator bar */
-    html.mobile-hswipe .page-snap-container > section {
-        padding-bottom: 3.5rem;
-    }
-
-    /* Hide the normal scroll indicator on hero */
-    html.mobile-hswipe .scroll-indicator {
-        display: none;
-    }
-
-    /* ---- Bottom Indicator Bar ---- */
-    .hswipe-bar {
+    /* ---- Fixed dive button (one instance, managed by JS) ---- */
+    .section-dive-btn {
         position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
         z-index: 10001;
-        background: rgba(10, 10, 15, 0.92);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border-top: 1px solid var(--border-color);
-        display: none;                 /* shown by JS */
-        flex-direction: column;
+        display: none;
         align-items: center;
-        padding: 0.4rem 0 0.55rem;
-    }
-
-    html.mobile-hswipe .hswipe-bar {
-        display: flex;
-    }
-
-    /* Section label */
-    .hswipe-label {
-        font-family: var(--font-mono);
-        font-size: 0.6rem;
+        gap: 0.4rem;
+        padding: 0.45rem 1rem;
+        background: rgba(10, 10, 15, 0.85);
+        border: 1px solid rgba(0, 255, 136, 0.35);
+        border-radius: 20px;
         color: var(--accent-green);
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        margin-bottom: 0.35rem;
-        transition: opacity 0.25s;
-    }
-
-    /* Progress dots row */
-    .hswipe-dots {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-    }
-
-    .hswipe-dot {
-        width: 18px;
-        height: 3px;
-        border-radius: 2px;
-        background: rgba(255, 255, 255, 0.12);
-        border: none;
-        padding: 0;
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
         cursor: pointer;
         transition: all 0.3s ease;
+        animation: pulse-dive 2s infinite;
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
     }
 
-    .hswipe-dot.active {
-        background: var(--accent-green);
-        width: 28px;
-        box-shadow: 0 0 8px rgba(0, 255, 136, 0.35);
+    .section-dive-btn:active {
+        background: rgba(0, 255, 136, 0.15);
+        border-color: var(--accent-green);
     }
 
-    /* Swipe hint arrow overlays */
-    .hswipe-arrow {
+    .section-dive-btn i {
+        font-size: 0.7rem;
+        transition: transform 0.3s;
+    }
+
+    .section-dive-btn.unlocked i {
+        transform: rotate(180deg);
+    }
+
+    /* ---- Fixed fade overlay (hints more content below) ---- */
+    .section-fade-overlay {
         position: fixed;
+        bottom: 3.2rem;
+        left: 0;
+        right: 0;
+        height: 5rem;
+        background: linear-gradient(transparent, var(--bg-primary));
+        pointer-events: none;
+        z-index: 10000;
+        display: none;
+        transition: opacity 0.3s;
+    }
+
+    @keyframes pulse-dive {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.2); }
+        50% { box-shadow: 0 0 12px 2px rgba(0, 255, 136, 0.15); }
+    }
+
+    /* Mobile dot navigation */
+    .mobile-page-dots {
+        position: fixed;
+        right: 0.4rem;
         top: 50%;
         transform: translateY(-50%);
-        z-index: 10002;
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        background: rgba(10, 10, 15, 0.6);
-        border: 1px solid rgba(0, 255, 136, 0.2);
-        color: var(--accent-green);
+        z-index: 10000;
         display: none;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.7rem;
-        pointer-events: none;
-        opacity: 0.5;
-        backdrop-filter: blur(4px);
-        -webkit-backdrop-filter: blur(4px);
+        flex-direction: column;
+        gap: 0.5rem;
     }
 
-    html.mobile-hswipe .hswipe-arrow {
+    html.mobile-paginated .mobile-page-dots {
         display: flex;
     }
 
-    .hswipe-arrow-left {
-        left: 0.35rem;
+    .mobile-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        border: 1.5px solid rgba(0, 255, 136, 0.35);
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        padding: 0;
     }
 
-    .hswipe-arrow-right {
-        right: 0.35rem;
+    .mobile-dot.active {
+        background: var(--accent-green);
+        border-color: var(--accent-green);
+        box-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+        transform: scale(1.3);
     }
 
-    .hswipe-arrow.hidden {
+    /* Page counter */
+    .mobile-page-counter {
+        position: fixed;
+        bottom: 0.7rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10000;
+        font-family: var(--font-mono);
+        font-size: 0.6rem;
+        color: rgba(0, 255, 136, 0.4);
         display: none;
     }
 
-    /* Subtle swipe-hint animation on first load */
-    @keyframes swipe-hint {
-        0%, 100% { transform: translateY(-50%) translateX(0); opacity: 0.5; }
-        50% { transform: translateY(-50%) translateX(-3px); opacity: 0.9; }
+    html.mobile-paginated .mobile-page-counter {
+        display: block;
     }
 
-    .hswipe-arrow-right.hint {
-        animation: swipe-hint 1.5s ease-in-out 3;
+    .mobile-page-counter .mp-current {
+        color: var(--accent-green);
+        font-weight: 700;
     }
 }
 
-/* Hide horizontal-swipe elements on desktop */
+/* Hide mobile pagination elements on desktop */
 @media (min-width: 769px) {
-    .hswipe-bar,
-    .hswipe-arrow,
     .mobile-page-dots,
     .mobile-page-counter {
         display: none !important;
