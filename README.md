@@ -32,6 +32,7 @@ portfolio/
 │   ├── certification/      # PDF certificates (VMware, Zerto, IBM, etc.)
 │   └── courses/            # Course completion certificates
 ├── experience/
+│   ├── e-quest.html         # Technical Lead and IT Manager experience
 │   └── summud-flotilla.html # Humanitarian Aid Maritime Flotilla experience
 ├── sitemap.xml             # SEO sitemap
 ├── LICENSE                 # MIT License
@@ -42,6 +43,16 @@ portfolio/
 
 ## Experience
 
+### IT Manager → Technical Lead — e-Quest
+**Helmond, The Netherlands** · January 2025–September 2026
+
+- Progressed from Technical Lead (January–June 2025) to IT Manager (July 2025–September 2026).
+- Managed approximately 15 engineers across first-line support, second-line support, and project engineering.
+- Coordinated priorities and collaboration across support and project work.
+- e-Quest provides business IT services including connectivity, datacenter, and automation services.
+
+[View the formatted e-Quest experience page](experience/e-quest.html).
+
 ### Ground Operations & IT Logistics Team Lead — Netherlands Delegation
 **Humanitarian Aid Maritime Flotilla Initiative** · June–September 2025 · Primarily remote, with a delegation gathering in the Netherlands
 
@@ -51,6 +62,12 @@ portfolio/
 - Adapted technical resources to infrastructure constraints, power outages, and changing operational and security conditions.
 
 [View the formatted experience page](experience/summud-flotilla.html).
+
+### Cloud Management & Automation Consultant — ITQ
+**Beverwijk, The Netherlands** · August 2023–December 2024
+
+- Designed and delivered VMware Aria Automation solutions and infrastructure-as-code for client environments.
+- Led cloud migration and modernization work across VMware platforms and delivered documentation and knowledge-transfer sessions.
 
 ---
 
