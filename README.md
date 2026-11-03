@@ -1,6 +1,6 @@
 # Karam Ajaj – Online Resume
 
-A modern, dark-themed portfolio and resume website built with vanilla HTML, CSS, and JavaScript. Features a terminal/coding aesthetic with matrix rain background, typing effects, scroll-reveal animations, and collapsible sections.
+A modern, dark-themed portfolio and resume website built with vanilla HTML, CSS, and JavaScript. Features a terminal/coding aesthetic with matrix rain background, typing effects, scroll-reveal animations, and interactive credential filtering.
 
 **Live Demo**: [portfolio.vnerd.nl](https://portfolio.vnerd.nl/) | [karam-ajaj.github.io/portfolio](https://karam-ajaj.github.io/portfolio/)
 
@@ -31,11 +31,26 @@ portfolio/
 ├── resrc/                  # Certifications, courses, and other resources
 │   ├── certification/      # PDF certificates (VMware, Zerto, IBM, etc.)
 │   └── courses/            # Course completion certificates
-├── vendor/                 # Third-party libraries (Font Awesome, etc.)
+├── experience/
+│   └── summud-flotilla.html # Humanitarian Aid Maritime Flotilla experience
 ├── sitemap.xml             # SEO sitemap
 ├── LICENSE                 # MIT License
-└── README.md               # This file
+└── README.md                # This file
 ```
+
+---
+
+## Experience
+
+### Ground Operations & IT Logistics Team Lead — Netherlands Delegation
+**Humanitarian Aid Maritime Flotilla Initiative** · June–September 2025 · Primarily remote, with a delegation gathering in the Netherlands
+
+- Coordinated the Netherlands delegation as part of an international team.
+- Supported field communications and data synchronization for emergency cargo tracking and distribution networks.
+- Coordinated localized hardware and network availability across staging areas, supporting connectivity between international teams, local authorities, and marine vessels.
+- Adapted technical resources to infrastructure constraints, power outages, and changing operational and security conditions.
+
+[View the formatted experience page](experience/summud-flotilla.html).
 
 ---
 
